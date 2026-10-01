@@ -1,0 +1,50 @@
+[
+  {
+    "repository": "SuperMario",
+    "commit": "eacaced92259969c9af8e29811a9e47fcb75921a",
+    "source": "game.js",
+    "destination": "demos/super-mario/game.js",
+    "sha": "0a9892806b739b32951c5fec8b76b425e72f701f",
+    "mode": "100644"
+  },
+  {
+    "repository": "SuperMario",
+    "commit": "eacaced92259969c9af8e29811a9e47fcb75921a",
+    "source": "index.html",
+    "destination": "demos/super-mario/index.html",
+    "sha": "62fc41b48db39980f8db78916c69829932cc4dce",
+    "mode": "100644"
+  },
+  {
+    "repository": "SuperMario",
+    "commit": "eacaced92259969c9af8e29811a9e47fcb75921a",
+    "source": "style.css",
+    "destination": "demos/super-mario/style.css",
+    "sha": "31f767fbdb0f77b7bd01bb98996ab9704c0da1ea",
+    "mode": "100644"
+  },
+  {
+    "repository": "Loading-Full-Stack",
+    "commit": "f0fc17d66126dcb824d5e1f7fc28d5d73e7b4b7c",
+    "source": "index.html/index.html",
+    "destination": "demos/learning-progress/index.html",
+    "sha": "c916f1da078d2f9887ac995f6e398d20f952c331",
+    "mode": "100644"
+  },
+  {
+    "repository": "Loading-Full-Stack",
+    "commit": "f0fc17d66126dcb824d5e1f7fc28d5d73e7b4b7c",
+    "source": "index.html/script.js",
+    "destination": "demos/learning-progress/script.js",
+    "sha": "cd2036440fef17013ebfdfb99ec2117b5657924e",
+    "mode": "100644"
+  },
+  {
+    "repository": "Loading-Full-Stack",
+    "commit": "f0fc17d66126dcb824d5e1f7fc28d5d73e7b4b7c",
+    "source": "index.html/style.css",
+    "destination": "demos/learning-progress/style.css",
+    "sha": "d384e7f2afd41a7a716f7f2373b1908964996811",
+    "mode": "100644"
+  }
+]
