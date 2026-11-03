@@ -1,0 +1,16 @@
+export const SHAPES={I:[[0,0,0,0],[1,1,1,1],[0,0,0,0],[0,0,0,0]],J:[[1,0,0],[1,1,1],[0,0,0]],L:[[0,0,1],[1,1,1],[0,0,0]],O:[[1,1],[1,1]],S:[[0,1,1],[1,1,0],[0,0,0]],T:[[0,1,0],[1,1,1],[0,0,0]],Z:[[1,1,0],[0,1,1],[0,0,0]]};
+export const BLOCK_COLORS={I:'#b4b39d',J:'#888a82',L:'#bd916c',O:'#c4af7d',S:'#8c9d7c',T:'#a298ac',Z:'#ae7e72'};
+const blank=()=>Array.from({length:20},()=>Array(10).fill(null));
+export function fits(board,piece,x=piece.x,y=piece.y,matrix=piece.matrix){for(let r=0;r<matrix.length;r++)for(let c=0;c<matrix[r].length;c++){if(!matrix[r][c])continue;const px=x+c,py=y+r;if(px<0||px>=10||py>=20||(py>=0&&board[py][px]))return false;}return true;}
+export function rotateMatrix(matrix){return matrix[0].map((_,c)=>matrix.map(row=>row[c]).reverse());}
+export function clearLines(board){const remaining=board.filter(row=>row.some(cell=>!cell));const lines=20-remaining.length;return{board:[...Array.from({length:lines},()=>Array(10).fill(null)),...remaining.map(r=>r.slice())],lines};}
+function takePiece(state,random){if(!state.bag.length){state.bag=Object.keys(SHAPES);for(let i=state.bag.length-1;i>0;i--){const j=Math.min(i,Math.floor(random()*(i+1)));[state.bag[i],state.bag[j]]=[state.bag[j],state.bag[i]];}}const kind=state.bag.pop();const matrix=SHAPES[kind].map(row=>row.slice());state.piece={kind,matrix,x:Math.floor((10-matrix.length)/2),y:-1};if(!fits(state.board,state.piece))state.over=true;}
+export function newTetris(random=Math.random){const state={board:blank(),piece:null,bag:[],score:0,lines:0,over:false,paused:false};takePiece(state,random);return state;}
+function lockPiece(state,random){const p=state.piece;let above=false;for(let r=0;r<p.matrix.length;r++)for(let c=0;c<p.matrix[r].length;c++){if(!p.matrix[r][c])continue;const y=p.y+r;if(y<0)above=true;else state.board[y][p.x+c]=p.kind;}if(above){state.over=true;return;}const cleared=clearLines(state.board);state.board=cleared.board;state.score+=[0,100,300,500,800][cleared.lines]*(1+Math.floor(state.lines/10));state.lines+=cleared.lines;takePiece(state,random);}
+export function stepTetris(input,action,random=Math.random){const state={...input,board:input.board.map(row=>row.slice()),bag:input.bag.slice(),piece:{...input.piece,matrix:input.piece.matrix.map(row=>row.slice())}};if(action==='pause'){if(!state.over)state.paused=!state.paused;return state;}if(state.over||state.paused)return state;const p=state.piece;
+ if(action==='left'||action==='right'){const x=p.x+(action==='left'?-1:1);if(fits(state.board,p,x,p.y))p.x=x;}
+ else if(action==='rotate'){const rotated=rotateMatrix(p.matrix);for(const dx of[0,-1,1,-2,2])if(fits(state.board,p,p.x+dx,p.y,rotated)){p.x+=dx;p.matrix=rotated;break;}}
+ else if(action==='tick'||action==='down'){if(fits(state.board,p,p.x,p.y+1)){p.y++;if(action==='down')state.score++;}else lockPiece(state,random);}
+ else if(action==='drop'){while(fits(state.board,p,p.x,p.y+1)){p.y++;state.score+=2;}lockPiece(state,random);}
+ return state;}
+export function visibleBoard(state){const board=state.board.map(r=>r.slice());const p=state.piece;if(!state.over)for(let r=0;r<p.matrix.length;r++)for(let c=0;c<p.matrix[r].length;c++)if(p.matrix[r][c]&&p.y+r>=0&&p.y+r<20)board[p.y+r][p.x+c]=p.kind;return board;}

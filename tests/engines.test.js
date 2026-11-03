@@ -1,0 +1,10 @@
+import{test}from'node:test';import assert from'node:assert/strict';import{moveBoard,addTile,isGameOver,analyzeLogins,sampleLogins}from'../engines.js';
+const blank=()=>Array.from({length:4},()=>[0,0,0,0]);
+test('2048 merges each original tile once',()=>{const b=blank();b[0]=[2,2,4,0];const r=moveBoard(b,'left');assert.deepEqual(r.board[0],[4,4,0,0]);assert.equal(r.score,4);assert.deepEqual(b[0],[2,2,4,0]);});
+test('2048 handles two independent merges and all directions',()=>{const b=blank();b[0]=[2,2,2,2];assert.deepEqual(moveBoard(b,'right').board[0],[0,0,4,4]);assert.equal(moveBoard(b,'left').score,8);assert.deepEqual(moveBoard(b,'down').board[3],[2,2,2,2]);});
+test('2048 does not spawn or report a move on an unchanged row',()=>{const b=blank();b[0]=[2,0,0,0];assert.equal(moveBoard(b,'left').changed,false);const next=addTile(b,()=>0);assert.equal(next[0][0],2);assert.equal(next[0][1],2);assert.equal(b[0][1],0);});
+test('2048 distinguishes a full dead board from an available merge',()=>{const dead=[[2,4,2,4],[4,2,4,2],[2,4,2,4],[4,2,4,2]];assert.equal(isGameOver(dead),true);dead[0][1]=2;assert.equal(isGameOver(dead),false);});
+test('login burst and subsequent success produce two separate review events',()=>{const result=analyzeLogins(sampleLogins('burst'));assert.equal(result.alerts.length,2);assert.deepEqual(result.alerts.map(a=>a.type),['failure-burst','success-after-failures']);});
+test('quiet login sample produces no alert',()=>assert.equal(analyzeLogins(sampleLogins('quiet')).alerts.length,0));
+test('detection never mixes different users on the same IP',()=>{const records=sampleLogins('burst').filter(r=>r.status==='failure').map((r,i)=>({...r,username:i%2?'one':'two'}));assert.equal(analyzeLogins(records).alerts.length,0);});
+test('expired failures are excluded and invalid rows fail explicitly',()=>{const records=sampleLogins('burst').filter(r=>r.status==='failure');records[0]={...records[0],timestamp:'2025-12-01T00:00:00Z'};assert.equal(analyzeLogins(records).alerts.length,0);assert.throws(()=>analyzeLogins([{ip:'192.0.2.1',username:'x',status:'failure',timestamp:'bad'}]),/Invalid login record/);});
