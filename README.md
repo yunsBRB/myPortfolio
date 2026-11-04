@@ -80,6 +80,3 @@ Three.js WebGL is the primary renderer. If WebGL is unavailable, SVGRenderer use
 
 Keyboard navigation and the Explore menu provide direct access to the portfolio sections. The interface respects reduced motion. Ambient sound is synthesized locally and starts off. Theme preference and the 2048 best score use localStorage when available.
 
-The security demo processes sample records in the browser. It does not scan or upload real logs. The portfolio has no backend, analytics or connected AI chat. Project descriptions link to their source and state their prototype limitations.
-
-The interactive-room concept was inspired by [kai.house](https://kai.house/).
