@@ -18,8 +18,8 @@ for (let i = 0; i < nombreParticules; i++) {
 
   const x = Math.random() * 100;
   const y = Math.random() * 100;
-  const dx = (Math.random() * 200 - 100) + 'px';
-  const dy = (Math.random() * 200 - 100) + 'px';
+  const dx = Math.random() * 200 - 100 + 'px';
+  const dy = Math.random() * 200 - 100 + 'px';
   const duree = 4 + Math.random() * 6;
   const delai = -(Math.random() * 6);
   const teinte = Math.floor(i * (360 / nombreParticules));
@@ -60,7 +60,7 @@ if (pourcentage <= 20) {
 }
 
 const milestones = document.querySelectorAll('.milestone');
-milestones.forEach(m => {
+milestones.forEach((m) => {
   const seuil = parseInt(m.getAttribute('data-pct'));
   if (pourcentage >= seuil) {
     m.classList.add('atteint');
@@ -70,4 +70,3 @@ milestones.forEach(m => {
     else dot.style.background = '#27ae60';
   }
 });
-

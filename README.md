@@ -8,14 +8,14 @@ I'm Younes Berebia, a junior Full Stack Java developer in training in Belgium. M
 
 ## Explore
 
-The small dots mark interactive objects. Open the computer to enter YUNS OS, or use the Explore menu to go straight to my projects, skills, journey, CV and contact details.
+The small dots mark interactive objects. Open the computer to enter YUNS OS, or use the Explore menu to go straight to my projects, skills, journey and contact details.
 
 - The laptop opens 2048 and Tetris.
 - The basketball, Rubik's cube and posters open short personal notes.
 - The security lab demonstrates login-pattern detection with sample records.
 - The desktop has movable windows, a terminal and a keyboard launcher (`Ctrl K`).
 
-The interface is in English. The downloadable CV is the original French PDF.
+The interface is in English.
 
 ## Run locally
 
@@ -34,30 +34,45 @@ No dependency installation or build step is required. Three.js 0.187.0 is includ
 Requires Node.js 20 or later:
 
 ```sh
+npm ci
+npm run format:check
 npm run check
 ```
 
 This checks JavaScript syntax and local assets, then runs 13 tests covering 2048, sample login detection and Tetris. Run `npm test` to run only the tests.
 
-## Edit
+## Source files
 
-| File | Purpose |
-| --- | --- |
-| `content.js` | Profile links, projects, skills and timeline |
-| `world.js` | Procedural room geometry, furniture and objects |
-| `room.js` | Camera, object selection, renderers and lighting |
-| `art.js` | Vector artwork on posters and screens |
-| `app.js` | Navigation, virtual windows and app interfaces |
-| `styles.css` | Layout, desktop styling and mobile adaptations |
-| `engines.js` | 2048 and sample login-analysis logic |
-| `tetris.js` | Falling-block game logic |
-| `assets/Younes-Berebia-CV.pdf` | Original CV in French |
+| File                 | Purpose                                          |
+| -------------------- | ------------------------------------------------ |
+| `src/js/content.js`  | Profile links, projects, skills and timeline     |
+| `src/js/world.js`    | Procedural room geometry, furniture and objects  |
+| `src/js/room.js`     | Camera, object selection, renderers and lighting |
+| `src/js/art.js`      | Vector artwork on posters and screens            |
+| `src/js/app.js`      | Navigation, virtual windows and app interfaces   |
+| `src/css/styles.css` | Layout, desktop styling and mobile adaptations   |
+| `src/js/engines.js`  | 2048 and sample login-analysis logic             |
+| `src/js/tetris.js`   | Falling-block game logic                         |
+
+Tests live in `tests/`, project checks in `scripts/`, and earlier import records in `docs/history/`.
+
+### Formatting
+
+Use two spaces for indentation, as defined in `.editorconfig` and `.prettierrc.json`. Keep functions and blocks on separate lines. WebStorm can read the editor settings directly.
+
+After editing, run:
+
+```sh
+npm run format
+```
+
+The formatter skips third-party files in `vendor/`, binary assets and historical records. Node.js and Prettier are development tools only; the published site needs no installation.
 
 ## Hosting
 
 GitHub Pages publishes `main` from the repository root. `.nojekyll` keeps the files as a plain static site. All application assets use relative paths so the site works under `/myPortfolio/`.
 
-The previous portfolio is preserved on [`backup-before-yuns-2026-11-03`](https://github.com/yunsBRB/myPortfolio/tree/backup-before-yuns-2026-11-03). The existing [Super Mario](https://yunsbrb.github.io/myPortfolio/demos/super-mario/) and [learning progress](https://yunsbrb.github.io/myPortfolio/demos/learning-progress/) demos remain at their original paths.
+The existing [Super Mario](https://yunsbrb.github.io/myPortfolio/demos/super-mario/) and [learning progress](https://yunsbrb.github.io/myPortfolio/demos/learning-progress/) demos remain at their original paths. Previous versions remain in Git history.
 
 ## Rendering and data
 

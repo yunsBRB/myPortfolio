@@ -49,21 +49,19 @@ body {
 }
 
 @keyframes shimmer {
-  0% { background-position: -200% center; }
-  100% { background-position: 200% center; }
+  0% {
+    background-position: -200% center;
+  }
+  100% {
+    background-position: 200% center;
+  }
 }
 
 .barre-remplissage {
-  background: linear-gradient(
-    90deg,
-    #21e52b 40%,
-    #6eff6b 50%,
-    #21e528 60%
-  );
+  background: linear-gradient(90deg, #21e52b 40%, #6eff6b 50%, #21e528 60%);
   background-size: 200% auto;
   animation: shimmer 2s linear infinite;
 }
-
 
 .particules {
   position: fixed;
@@ -84,9 +82,18 @@ body {
 }
 
 @keyframes flotter {
-  0%   { transform: translate3d(0, 0, 0); opacity: 0.8; }
-  50%  { transform: translate3d(var(--x), var(--y), 0); opacity: 0.2; }
-  100% { transform: translate3d(0, 0, 0); opacity: 0.8; }
+  0% {
+    transform: translate3d(0, 0, 0);
+    opacity: 0.8;
+  }
+  50% {
+    transform: translate3d(var(--x), var(--y), 0);
+    opacity: 0.2;
+  }
+  100% {
+    transform: translate3d(0, 0, 0);
+    opacity: 0.8;
+  }
 }
 
 .container {
@@ -107,7 +114,7 @@ body {
 }
 
 .subtitle {
-    font-size: 1rem;
+  font-size: 1rem;
 }
 
 .statut {
@@ -131,7 +138,9 @@ body {
   align-items: center;
   gap: 14px;
   opacity: 0.3;
-  transition: opacity 0.5s ease, transform 0.3s ease;
+  transition:
+    opacity 0.5s ease,
+    transform 0.3s ease;
 }
 
 .milestone.atteint {
@@ -179,16 +188,14 @@ body {
   font-family: Verdana, sans-serif;
   font-size: 10pt;
   font-weight: bold;
-  color : black;
+  color: black;
   display: flex;
   align-items: center;
 }
-
-
 
 .statut {
   font-family: Verdana, sans-serif;
   font-size: 10pt;
   font-weight: bold;
-  color : black;
+  color: black;
 }

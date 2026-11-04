@@ -1,123 +1,182 @@
 window.addEventListener('DOMContentLoaded', () => {
-
   const canvas = document.getElementById('gameCanvas');
   const ctx = canvas.getContext('2d');
   canvas.width = 800;
   canvas.height = 464;
 
   // ── HUD elements ──────────────────────────────────────────────────────────────
-  const scoreEl  = document.getElementById('score');
-  const livesEl  = document.getElementById('lives');
-  const coinsEl  = document.getElementById('coins');
-  const timerEl  = document.getElementById('timer');
-  const overlay  = document.getElementById('overlay');
+  const scoreEl = document.getElementById('score');
+  const livesEl = document.getElementById('lives');
+  const coinsEl = document.getElementById('coins');
+  const timerEl = document.getElementById('timer');
+  const overlay = document.getElementById('overlay');
   const overlayTitle = document.getElementById('overlay-title');
-  const overlayMsg   = document.getElementById('overlay-msg');
-  const overlayBtn   = document.getElementById('overlay-btn');
+  const overlayMsg = document.getElementById('overlay-msg');
+  const overlayBtn = document.getElementById('overlay-btn');
 
   // ── Constants ─────────────────────────────────────────────────────────────────
-  const GRAVITY      = 0.5;
-  const TILE         = 32;
-  const GROUND_Y     = canvas.height - TILE;   
-  const CAM_DEADZONE = 300;                    
+  const GRAVITY = 0.5;
+  const TILE = 32;
+  const GROUND_Y = canvas.height - TILE;
+  const CAM_DEADZONE = 300;
 
   // ── Colour palette ────────────────────────────────────────────────────────────
   const C = {
-    sky:       '#5c94fc',
-    ground:    '#c84c0c',
-    groundTop:'#e86818',
-    brick:     '#c84c0c',
+    sky: '#5c94fc',
+    ground: '#c84c0c',
+    groundTop: '#e86818',
+    brick: '#c84c0c',
     brickTop: '#e86818',
     question: '#e8a000',
-    qShine:    '#f8c800',
-    coin:      '#f8c800',
-    coinRim:   '#c89600',
-    mario:     { hat:'#e52521', skin:'#ffa060', overalls:'#0070e0', shoes:'#7b3f00' },
-    goomba:    { body:'#c07038', dark:'#7b3000', eye:'#fff', pupil:'#000' },
-    pipe:      { body:'#00a800', rim:'#00d800', dark:'#006800' },
-    flag:      { pole:'#888', flag:'#e52521' },
-    cloud:     '#fff',
-    hill:      '#00a800',
+    qShine: '#f8c800',
+    coin: '#f8c800',
+    coinRim: '#c89600',
+    mario: { hat: '#e52521', skin: '#ffa060', overalls: '#0070e0', shoes: '#7b3f00' },
+    goomba: { body: '#c07038', dark: '#7b3000', eye: '#fff', pupil: '#000' },
+    pipe: { body: '#00a800', rim: '#00d800', dark: '#006800' },
+    flag: { pole: '#888', flag: '#e52521' },
+    cloud: '#fff',
+    hill: '#00a800',
   };
 
   // ── World definition ──────────────────────────────────────────────────────────
   const WORLD_W = 200 * TILE;
 
   const platformDefs = [
-    { x:16, y:8, w:1, type:'question', coinVal:1 },
-    { x:20, y:8, w:1, type:'question', coinVal:1 },
-    { x:21, y:8, w:1, type:'brick' },
-    { x:22, y:8, w:1, type:'question', coinVal:1 },
-    { x:23, y:8, w:1, type:'brick' },
-    { x:28, y:11, w:4, type:'brick' },
-    { x:28, y:9,  w:2, type:'question', coinVal:1 },
-    { x:37, y:8, w:1, type:'question', coinVal:5 },
-    { x:40, y:6, w:3, type:'brick' },
-    { x:44, y:8, w:1, type:'question', coinVal:1 },
-    { x:46, y:8, w:3, type:'brick' },
-    { x:47, y:6, w:1, type:'question', coinVal:1 },
-    { x:57, y:6, w:5, type:'brick' },
-    { x:60, y:8, w:1, type:'question', coinVal:1 },
-    { x:70, y:10, w:3, type:'brick' },
-    { x:80, y:8,  w:4, type:'brick' },
-    { x:85, y:6,  w:2, type:'question', coinVal:2 },
-    { x:95, y:8,  w:5, type:'brick' },
-    { x:100,y:6,  w:3, type:'question', coinVal:3 },
-    { x:110,y:9,  w:4, type:'brick' },
-    { x:120,y:7,  w:3, type:'brick' },
-    { x:130,y:8,  w:4, type:'question', coinVal:2 },
-    { x:140,y:7,  w:5, type:'brick' },
-    { x:150,y:9,  w:3, type:'brick' },
-    { x:160,y:6,  w:4, type:'question', coinVal:3 },
-    { x:170,y:8,  w:4, type:'brick' },
-    { x:180,y:7,  w:3, type:'question', coinVal:2 },
+    { x: 16, y: 8, w: 1, type: 'question', coinVal: 1 },
+    { x: 20, y: 8, w: 1, type: 'question', coinVal: 1 },
+    { x: 21, y: 8, w: 1, type: 'brick' },
+    { x: 22, y: 8, w: 1, type: 'question', coinVal: 1 },
+    { x: 23, y: 8, w: 1, type: 'brick' },
+    { x: 28, y: 11, w: 4, type: 'brick' },
+    { x: 28, y: 9, w: 2, type: 'question', coinVal: 1 },
+    { x: 37, y: 8, w: 1, type: 'question', coinVal: 5 },
+    { x: 40, y: 6, w: 3, type: 'brick' },
+    { x: 44, y: 8, w: 1, type: 'question', coinVal: 1 },
+    { x: 46, y: 8, w: 3, type: 'brick' },
+    { x: 47, y: 6, w: 1, type: 'question', coinVal: 1 },
+    { x: 57, y: 6, w: 5, type: 'brick' },
+    { x: 60, y: 8, w: 1, type: 'question', coinVal: 1 },
+    { x: 70, y: 10, w: 3, type: 'brick' },
+    { x: 80, y: 8, w: 4, type: 'brick' },
+    { x: 85, y: 6, w: 2, type: 'question', coinVal: 2 },
+    { x: 95, y: 8, w: 5, type: 'brick' },
+    { x: 100, y: 6, w: 3, type: 'question', coinVal: 3 },
+    { x: 110, y: 9, w: 4, type: 'brick' },
+    { x: 120, y: 7, w: 3, type: 'brick' },
+    { x: 130, y: 8, w: 4, type: 'question', coinVal: 2 },
+    { x: 140, y: 7, w: 5, type: 'brick' },
+    { x: 150, y: 9, w: 3, type: 'brick' },
+    { x: 160, y: 6, w: 4, type: 'question', coinVal: 3 },
+    { x: 170, y: 8, w: 4, type: 'brick' },
+    { x: 180, y: 7, w: 3, type: 'question', coinVal: 2 },
   ];
 
   const pipeDefs = [
-    { x:14, h:2 }, { x:24, h:3 }, { x:31, h:4 }, { x:36, h:4 },
-    { x:55, h:2 }, { x:67, h:3 }, { x:90, h:2 }, { x:105, h:3 },
-    { x:118, h:2 }, { x:135, h:4 }, { x:148, h:3 }, { x:165, h:2 },
-    { x:178, h:3 }, { x:190, h:2 },
+    { x: 14, h: 2 },
+    { x: 24, h: 3 },
+    { x: 31, h: 4 },
+    { x: 36, h: 4 },
+    { x: 55, h: 2 },
+    { x: 67, h: 3 },
+    { x: 90, h: 2 },
+    { x: 105, h: 3 },
+    { x: 118, h: 2 },
+    { x: 135, h: 4 },
+    { x: 148, h: 3 },
+    { x: 165, h: 2 },
+    { x: 178, h: 3 },
+    { x: 190, h: 2 },
   ];
 
   const stairDefs = [
-    { x:187, maxH:4 }, { x:193, maxH:8 },
+    { x: 187, maxH: 4 },
+    { x: 193, maxH: 8 },
   ];
 
   const gapDefs = [
-    { x:50, w:3 }, { x:75, w:3 }, { x:115, w:4 }, { x:155, w:3 }, { x:175, w:2 },
+    { x: 50, w: 3 },
+    { x: 75, w: 3 },
+    { x: 115, w: 4 },
+    { x: 155, w: 3 },
+    { x: 175, w: 2 },
   ];
 
   const enemyDefs = [
-    { x:22 },{ x:30 },{ x:38 },{ x:48 },{ x:58 },{ x:65 },
-    { x:72 },{ x:83 },{ x:92 },{ x:103 },{ x:112 },{ x:123 },
-    { x:133 },{ x:143 },{ x:152 },{ x:162 },{ x:173 },{ x:182 },
+    { x: 22 },
+    { x: 30 },
+    { x: 38 },
+    { x: 48 },
+    { x: 58 },
+    { x: 65 },
+    { x: 72 },
+    { x: 83 },
+    { x: 92 },
+    { x: 103 },
+    { x: 112 },
+    { x: 123 },
+    { x: 133 },
+    { x: 143 },
+    { x: 152 },
+    { x: 162 },
+    { x: 173 },
+    { x: 182 },
   ];
 
   const coinDefs = [
-    { x:17, y:7 },{ x:21, y:7 },{ x:41, y:5 },{ x:47, y:5 },
-    { x:57, y:5 },{ x:58, y:5 },{ x:59, y:5 },{ x:70, y:9 },
-    { x:80, y:7 },{ x:95, y:7 },{ x:100, y:5 },{ x:120, y:6 },
-    { x:130, y:7 },{ x:140, y:6 },{ x:160, y:5 },{ x:180, y:6 },
+    { x: 17, y: 7 },
+    { x: 21, y: 7 },
+    { x: 41, y: 5 },
+    { x: 47, y: 5 },
+    { x: 57, y: 5 },
+    { x: 58, y: 5 },
+    { x: 59, y: 5 },
+    { x: 70, y: 9 },
+    { x: 80, y: 7 },
+    { x: 95, y: 7 },
+    { x: 100, y: 5 },
+    { x: 120, y: 6 },
+    { x: 130, y: 7 },
+    { x: 140, y: 6 },
+    { x: 160, y: 5 },
+    { x: 180, y: 6 },
   ];
 
   const cloudDefs = [
-    { x:5,  y:3 },{ x:18, y:2 },{ x:35, y:4 },{ x:50, y:2 },
-    { x:65, y:3 },{ x:80, y:2 },{ x:95, y:4 },{ x:110,y:2 },
-    { x:125,y:3 },{ x:140,y:2 },{ x:155,y:4 },{ x:170,y:2 },
-    { x:185,y:3 },
+    { x: 5, y: 3 },
+    { x: 18, y: 2 },
+    { x: 35, y: 4 },
+    { x: 50, y: 2 },
+    { x: 65, y: 3 },
+    { x: 80, y: 2 },
+    { x: 95, y: 4 },
+    { x: 110, y: 2 },
+    { x: 125, y: 3 },
+    { x: 140, y: 2 },
+    { x: 155, y: 4 },
+    { x: 170, y: 2 },
+    { x: 185, y: 3 },
   ];
 
   const hillDefs = [
-    { x:2, r:50 },{ x:10, r:40 },{ x:20, r:60 },{ x:35, r:45 },
-    { x:55, r:55 },{ x:70, r:40 },{ x:90, r:50 },{ x:110, r:45 },
-    { x:130, r:60 },{ x:150, r:40 },{ x:170, r:55 },{ x:185, r:45 },
+    { x: 2, r: 50 },
+    { x: 10, r: 40 },
+    { x: 20, r: 60 },
+    { x: 35, r: 45 },
+    { x: 55, r: 55 },
+    { x: 70, r: 40 },
+    { x: 90, r: 50 },
+    { x: 110, r: 45 },
+    { x: 130, r: 60 },
+    { x: 150, r: 40 },
+    { x: 170, r: 55 },
+    { x: 185, r: 45 },
   ];
 
   const FLAG_X = 195;
 
   // ── Game state ────────────────────────────────────────────────────────────────
-  let state = 'title'; 
+  let state = 'title';
   let score = 0;
   let lives = 3;
   let coinCount = 0;
@@ -127,14 +186,15 @@ window.addEventListener('DOMContentLoaded', () => {
 
   let mario, platforms, pipes, enemies, coins, particles;
   let pendingSuperJump = false;
-  let lastJumpTapTime  = 0;
-  let superFlash       = 0;
+  let lastJumpTapTime = 0;
+  let superFlash = 0;
 
   // ── Particle system ───────────────────────────────────────────────────────────
   function spawnParticles(x, y, color, n = 6) {
     for (let i = 0; i < n; i++) {
       particles.push({
-        x, y,
+        x,
+        y,
         vx: (Math.random() - 0.5) * 5,
         vy: -(Math.random() * 4 + 2),
         life: 40,
@@ -146,12 +206,12 @@ window.addEventListener('DOMContentLoaded', () => {
 
   function updateParticles() {
     for (let p of particles) {
-      p.x  += p.vx;
-      p.y  += p.vy;
+      p.x += p.vx;
+      p.y += p.vy;
       p.vy += 0.2;
       p.life--;
     }
-    particles = particles.filter(p => p.life > 0);
+    particles = particles.filter((p) => p.life > 0);
   }
 
   function drawParticles(cx) {
@@ -167,14 +227,14 @@ window.addEventListener('DOMContentLoaded', () => {
 
   // ── Init / reset ──────────────────────────────────────────────────────────────
   function initGame() {
-    score     = 0;
+    score = 0;
     coinCount = 0;
-    timeLeft  = 400;
-    camX      = 0;
+    timeLeft = 400;
+    camX = 0;
     particles = [];
     pendingSuperJump = false;
-    lastJumpTapTime  = 0;
-    superFlash       = 0;
+    lastJumpTapTime = 0;
+    superFlash = 0;
 
     scoreEl.textContent = '000000';
     coinsEl.textContent = '0';
@@ -183,23 +243,23 @@ window.addEventListener('DOMContentLoaded', () => {
 
     // Réinitialisation robuste et explicite de Mario
     mario = {
-      x: 100, 
-      y: GROUND_Y - 32, 
+      x: 100,
+      y: GROUND_Y - 32,
       w: 24,
       h: 32,
       vx: 0,
       vy: 0,
       onGround: true,
-      dir: 1,      
+      dir: 1,
       walking: false,
       frame: 0,
       frameTimer: 0,
       dead: false,
       deadTimer: 0,
-      invincible: 0,   
+      invincible: 0,
     };
 
-    platforms = platformDefs.map(p => ({
+    platforms = platformDefs.map((p) => ({
       x: p.x * TILE,
       y: p.y * TILE,
       w: p.w * TILE,
@@ -210,7 +270,7 @@ window.addEventListener('DOMContentLoaded', () => {
       bounce: 0,
     }));
 
-    pipes = pipeDefs.map(p => ({
+    pipes = pipeDefs.map((p) => ({
       x: p.x * TILE,
       y: GROUND_Y - p.h * TILE,
       w: 2 * TILE,
@@ -234,7 +294,7 @@ window.addEventListener('DOMContentLoaded', () => {
       }
     }
 
-    enemies = enemyDefs.map(e => ({
+    enemies = enemyDefs.map((e) => ({
       x: e.x * TILE,
       y: GROUND_Y - TILE,
       w: TILE - 4,
@@ -247,7 +307,7 @@ window.addEventListener('DOMContentLoaded', () => {
       frameTimer: 0,
     }));
 
-    coins = coinDefs.map(c => ({
+    coins = coinDefs.map((c) => ({
       x: c.x * TILE + TILE / 2,
       y: c.y * TILE + TILE / 2,
       r: 8,
@@ -265,10 +325,10 @@ window.addEventListener('DOMContentLoaded', () => {
 
   // ── Input ─────────────────────────────────────────────────────────────────────
   const keys = {};
-  const JUMP_KEYS = ['Space','ArrowUp','KeyW'];
+  const JUMP_KEYS = ['Space', 'ArrowUp', 'KeyW'];
   const DOUBLE_TAP_MS = 400;
 
-  window.addEventListener('keydown', e => {
+  window.addEventListener('keydown', (e) => {
     if (JUMP_KEYS.includes(e.code) && !e.repeat) {
       const now = performance.now();
       if (now - lastJumpTapTime < DOUBLE_TAP_MS) {
@@ -280,16 +340,35 @@ window.addEventListener('DOMContentLoaded', () => {
       lastJumpTapTime = now;
     }
     keys[e.code] = true;
-    if (['Space','ArrowUp','ArrowLeft','ArrowRight','ArrowDown',
-         'KeyW','KeyA','KeyD','KeyS'].includes(e.code)) {
+    if (
+      [
+        'Space',
+        'ArrowUp',
+        'ArrowLeft',
+        'ArrowRight',
+        'ArrowDown',
+        'KeyW',
+        'KeyA',
+        'KeyD',
+        'KeyS',
+      ].includes(e.code)
+    ) {
       e.preventDefault();
     }
   });
-  window.addEventListener('keyup', e => { keys[e.code] = false; });
+  window.addEventListener('keyup', (e) => {
+    keys[e.code] = false;
+  });
 
-  function isLeft()  { return keys['ArrowLeft']  || keys['KeyA']; }
-  function isRight() { return keys['ArrowRight'] || keys['KeyD']; }
-  function isJump()  { return keys['Space'] || keys['ArrowUp'] || keys['KeyW']; }
+  function isLeft() {
+    return keys['ArrowLeft'] || keys['KeyA'];
+  }
+  function isRight() {
+    return keys['ArrowRight'] || keys['KeyD'];
+  }
+  function isJump() {
+    return keys['Space'] || keys['ArrowUp'] || keys['KeyW'];
+  }
 
   // ── Physics / collision ───────────────────────────────────────────────────────
   function rectOverlap(ax, ay, aw, ah, bx, by, bw, bh) {
@@ -315,7 +394,7 @@ window.addEventListener('DOMContentLoaded', () => {
         mario.vy = -8;
       }
       mario.vy += GRAVITY;
-      mario.y  += mario.vy;
+      mario.y += mario.vy;
       if (mario.y > canvas.height + 100) {
         lives--;
         if (lives <= 0) {
@@ -352,7 +431,7 @@ window.addEventListener('DOMContentLoaded', () => {
     if (mario.x + mario.w > WORLD_W) mario.x = WORLD_W - mario.w;
 
     mario.vy += GRAVITY;
-    mario.y  += mario.vy;
+    mario.y += mario.vy;
     mario.onGround = false;
 
     if (mario.y < 0) {
@@ -360,8 +439,9 @@ window.addEventListener('DOMContentLoaded', () => {
       if (mario.vy < 0) mario.vy = 0;
     }
 
-    const mx1 = mario.x, mx2 = mario.x + mario.w;
-    const groundTileLeft  = Math.floor(mx1 / TILE);
+    const mx1 = mario.x,
+      mx2 = mario.x + mario.w;
+    const groundTileLeft = Math.floor(mx1 / TILE);
     const groundTileRight = Math.floor((mx2 - 1) / TILE);
 
     const feetY = mario.y + mario.h;
@@ -388,10 +468,10 @@ window.addEventListener('DOMContentLoaded', () => {
     for (let p of platforms) {
       if (!rectOverlap(mario.x, mario.y, mario.w, mario.h, p.x, p.y, p.w, p.h)) continue;
 
-      const overlapLeft   = (mario.x + mario.w) - p.x;
-      const overlapRight  = (p.x + p.w) - mario.x;
-      const overlapTop    = (mario.y + mario.h) - p.y;
-      const overlapBottom = (p.y + p.h) - mario.y;
+      const overlapLeft = mario.x + mario.w - p.x;
+      const overlapRight = p.x + p.w - mario.x;
+      const overlapTop = mario.y + mario.h - p.y;
+      const overlapBottom = p.y + p.h - mario.y;
 
       const minH = Math.min(overlapLeft, overlapRight);
       const minV = Math.min(overlapTop, overlapBottom);
@@ -419,10 +499,10 @@ window.addEventListener('DOMContentLoaded', () => {
     for (let p of pipes) {
       if (!rectOverlap(mario.x, mario.y, mario.w, mario.h, p.x, p.y, p.w, p.h)) continue;
 
-      const overlapLeft   = (mario.x + mario.w) - p.x;
-      const overlapRight  = (p.x + p.w) - mario.x;
-      const overlapTop    = (mario.y + mario.h) - p.y;
-      const overlapBottom = (p.y + p.h) - mario.y;
+      const overlapLeft = mario.x + mario.w - p.x;
+      const overlapRight = p.x + p.w - mario.x;
+      const overlapTop = mario.y + mario.h - p.y;
+      const overlapBottom = p.y + p.h - mario.y;
       const minH = Math.min(overlapLeft, overlapRight);
       const minV = Math.min(overlapTop, overlapBottom);
 
@@ -460,8 +540,8 @@ window.addEventListener('DOMContentLoaded', () => {
 
     for (let c of coins) {
       if (c.collected) continue;
-      const dx = (mario.x + mario.w / 2) - c.x;
-      const dy = (mario.y + mario.h / 2) - c.y;
+      const dx = mario.x + mario.w / 2 - c.x;
+      const dy = mario.y + mario.h / 2 - c.y;
       if (Math.abs(dx) < mario.w / 2 + c.r && Math.abs(dy) < mario.h / 2 + c.r) {
         c.collected = true;
         coinCount++;
@@ -476,7 +556,7 @@ window.addEventListener('DOMContentLoaded', () => {
       if (!rectOverlap(mario.x, mario.y, mario.w, mario.h, e.x, e.y, e.w, e.h)) continue;
 
       const mBottom = mario.y + mario.h;
-      const eTop    = e.y;
+      const eTop = e.y;
 
       if (mario.vy > 0 && mBottom - mario.vy <= eTop + 4) {
         e.dead = true;
@@ -498,7 +578,10 @@ window.addEventListener('DOMContentLoaded', () => {
 
     if (mario.walking && mario.onGround) {
       mario.frameTimer++;
-      if (mario.frameTimer > 6) { mario.frame = (mario.frame + 1) % 3; mario.frameTimer = 0; }
+      if (mario.frameTimer > 6) {
+        mario.frame = (mario.frame + 1) % 3;
+        mario.frameTimer = 0;
+      }
     } else if (!mario.walking) {
       mario.frame = 0;
     }
@@ -550,9 +633,9 @@ window.addEventListener('DOMContentLoaded', () => {
 
       e.x += e.vx;
 
-      const eTileLeft  = Math.floor(e.x / TILE);
+      const eTileLeft = Math.floor(e.x / TILE);
       const eTileRight = Math.floor((e.x + e.w - 1) / TILE);
-      const aheadTile  = e.vx < 0 ? eTileLeft - 1 : eTileRight + 1;
+      const aheadTile = e.vx < 0 ? eTileLeft - 1 : eTileRight + 1;
 
       if (isGap(aheadTile * TILE) || e.x <= 0 || e.x + e.w >= WORLD_W) {
         e.vx = -e.vx;
@@ -569,7 +652,10 @@ window.addEventListener('DOMContentLoaded', () => {
       e.y = GROUND_Y - e.h;
 
       e.frameTimer++;
-      if (e.frameTimer > 10) { e.frame = (e.frame + 1) % 2; e.frameTimer = 0; }
+      if (e.frameTimer > 10) {
+        e.frame = (e.frame + 1) % 2;
+        e.frameTimer = 0;
+      }
     }
   }
 
@@ -585,7 +671,10 @@ window.addEventListener('DOMContentLoaded', () => {
   }
 
   function stopTimer() {
-    if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
+    if (timerInterval) {
+      clearInterval(timerInterval);
+      timerInterval = null;
+    }
   }
 
   // ── End game ──────────────────────────────────────────────────────────────────
@@ -633,7 +722,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
     ctx.fillStyle = C.cloud;
     for (let cl of cloudDefs) {
-      const cldx = cl.x * TILE - cx * 0.5; 
+      const cldx = cl.x * TILE - cx * 0.5;
       const cldy = cl.y * TILE;
       if (cldx < -120 || cldx > canvas.width + 120) continue;
       drawCloud(cldx, cldy);
@@ -642,9 +731,9 @@ window.addEventListener('DOMContentLoaded', () => {
 
   function drawCloud(x, y) {
     ctx.beginPath();
-    ctx.arc(x,       y, 20, Math.PI, 0);
-    ctx.arc(x + 20,  y - 12, 26, Math.PI, 0);
-    ctx.arc(x + 50,  y, 20, Math.PI, 0);
+    ctx.arc(x, y, 20, Math.PI, 0);
+    ctx.arc(x + 20, y - 12, 26, Math.PI, 0);
+    ctx.arc(x + 50, y, 20, Math.PI, 0);
     ctx.closePath();
     ctx.fill();
   }
@@ -822,7 +911,7 @@ window.addEventListener('DOMContentLoaded', () => {
   function drawMarioSprite(ox, oy, frame, airborne) {
     ctx.fillStyle = C.mario.hat;
     ctx.fillRect(ox - 10, oy - 32, 20, 6);
-    ctx.fillRect(ox - 7,  oy - 38, 16, 8);
+    ctx.fillRect(ox - 7, oy - 38, 16, 8);
 
     ctx.fillStyle = C.mario.skin;
     ctx.fillRect(ox - 8, oy - 26, 16, 10);
@@ -832,7 +921,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
     ctx.fillStyle = C.mario.shoes;
     ctx.fillRect(ox - 8, oy - 18, 6, 3);
-    ctx.fillRect(ox,     oy - 18, 6, 3);
+    ctx.fillRect(ox, oy - 18, 6, 3);
 
     ctx.fillStyle = C.mario.overalls;
     ctx.fillRect(ox - 10, oy - 18, 20, 14);
@@ -844,11 +933,11 @@ window.addEventListener('DOMContentLoaded', () => {
     const legOff = airborne ? [0, 0] : frame === 1 ? [-4, 4] : frame === 2 ? [4, -4] : [0, 0];
     ctx.fillStyle = C.mario.overalls;
     ctx.fillRect(ox - 10, oy - 4 + legOff[0], 8, 8);
-    ctx.fillRect(ox + 2,  oy - 4 + legOff[1], 8, 8);
+    ctx.fillRect(ox + 2, oy - 4 + legOff[1], 8, 8);
 
     ctx.fillStyle = C.mario.shoes;
     ctx.fillRect(ox - 12, oy + 2 + legOff[0], 12, 6);
-    ctx.fillRect(ox + 1,  oy + 2 + legOff[1], 12, 6);
+    ctx.fillRect(ox + 1, oy + 2 + legOff[1], 12, 6);
 
     ctx.fillStyle = C.mario.skin;
     const armY = airborne ? -22 : -16;
@@ -879,9 +968,9 @@ window.addEventListener('DOMContentLoaded', () => {
     ctx.arc(poleX + 3, GROUND_Y - poleH, 6, 0, Math.PI * 2);
     ctx.fill();
   }
-// ==========================================
-//  Super Mario Remake - Développé par yunsBRB 
-// ==========================================
+  // ==========================================
+  //  Super Mario Remake - Développé par yunsBRB
+  // ==========================================
   // ── Main loop ─────────────────────────────────────────────────────────────────
   let lastTime = 0;
   function loop(ts) {
@@ -889,10 +978,10 @@ window.addEventListener('DOMContentLoaded', () => {
 
     drawBackground(camX);
     drawGround(camX);
-    for (let p of pipes)     drawPipe(p, camX);
+    for (let p of pipes) drawPipe(p, camX);
     for (let p of platforms) drawPlatform(p, camX);
-    for (let c of coins)     drawCoin(c, camX);
-    for (let e of enemies)   drawGoomba(e, camX);
+    for (let c of coins) drawCoin(c, camX);
+    for (let e of enemies) drawGoomba(e, camX);
     drawFlag(camX);
     drawMario(camX);
     drawParticles(camX);
@@ -913,7 +1002,7 @@ window.addEventListener('DOMContentLoaded', () => {
       ctx.textAlign = 'center';
       const fy = canvas.height / 2 - (45 - superFlash) * 2;
       ctx.strokeText('SUPER JUMP!', canvas.width / 2, fy);
-      ctx.fillText('SUPER JUMP!',   canvas.width / 2, fy);
+      ctx.fillText('SUPER JUMP!', canvas.width / 2, fy);
       ctx.restore();
       superFlash--;
     }
