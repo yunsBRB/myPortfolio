@@ -1,6 +1,7 @@
 import { createRoom } from './room.js';
 import { newTetris, stepTetris, visibleBoard, BLOCK_COLORS } from './tetris.js';
 import { PROFILE, APPS, PROJECTS, STACK, JOURNEY } from './content.js';
+import { mountProjectPortfolio } from './portfolio.js';
 import {
   moveBoard,
   addTile,
@@ -674,6 +675,10 @@ function mount(root, id) {
   root.dataset.appRoot = id;
   root.dataset.instance = String(++instanceCounter);
   root.classList.add('app-content');
+  if (id === 'projects' && root.closest('[data-window="projects"]')) {
+    mountProjectPortfolio(root);
+    return;
+  }
   root.innerHTML = viewFor(id);
   $$('.app-eyebrow', root).forEach((el) => el.remove());
   if (id === 'security') {
